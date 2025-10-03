@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const Hero = () => {
-  const { status: sessionStatus } = useSession();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showMenu, setMenuVisibility] = useState(false);
+
+  useEffect(() => {
+    // Check for demo cookie
+    const hasDemo = document.cookie.includes('demoEmail=');
+    setIsAuthenticated(hasDemo);
+  }, []);
 
   const toggleMenu = () => setMenuVisibility(!showMenu);
   const { t } = useTranslation();
@@ -16,7 +21,7 @@ const Hero = () => {
       <div className="relative flex flex-col px-10 mx-auto space-y-5 md:w-3/4">
         <header className="flex items-center justify-between space-x-3">
           <Link href="/" className="text-2xl font-bold">
-            Nextacular
+            reclutapersonal
           </Link>
           <button className="md:hidden" onClick={toggleMenu}>
             {!showMenu ? (
@@ -34,35 +39,40 @@ const Hero = () => {
             ].join(' ')}
           >
             <nav className="flex flex-col w-full space-x-0 space-y-3 text-center md:space-y-0 md:space-x-3 md:flex-row">
-              <a className="px-5 py-2 rounded hover:bg-gray-100">{t("common.label.guides")}</a>
-              <a className="px-5 py-2 rounded hover:bg-gray-100">{t("common.label.pricing")}</a>
-              <a className="px-5 py-2 rounded hover:bg-gray-100">{t("common.label.blog")}</a>
+              <a className="px-5 py-2 rounded hover:bg-gray-100">
+                {t('common.label.guides')}
+              </a>
+              <a className="px-5 py-2 rounded hover:bg-gray-100">
+                {t('common.label.pricing')}
+              </a>
+              <a className="px-5 py-2 rounded hover:bg-gray-100">
+                {t('common.label.blog')}
+              </a>
             </nav>
             <Link
-              href={
-                sessionStatus === 'authenticated' ? '/account' : '/auth/login'
-              }
-              className="w-full px-5 py-2 text-center text-white bg-blue-600 rounded shadow hover:bg-blue-500"
+              href={isAuthenticated ? '/account' : '/auth/login'}
+              className="w-full px-5 py-2 text-center text-white bg-brand-orange rounded shadow hover:opacity-90"
             >
-              {sessionStatus === 'authenticated' ? 'Go to Dashboard' : 'Login'}
+              {isAuthenticated ? 'Ir al Dashboard' : 'Ingresar'}
             </Link>
           </div>
         </header>
         <div className="flex flex-col items-center justify-center pt-10 mx-auto md:w-3/5">
           <h1 className="text-6xl font-extrabold text-center">
-            <span className="block">Build SaaS platforms</span>
-            <span className="block text-blue-600">like never before</span>
+            <span className="block">Construye plataformas SaaS</span>
+            <span className="block text-brand-orange">como nunca antes</span>
           </h1>
           <p className="mt-5 text-center text-gray-600">
-            Quickly build landing pages that will help you get results fast
+            Construye rápidamente páginas de aterrizaje que te ayudarán a
+            obtener resultados rápidos
           </p>
         </div>
         <div className="flex items-center justify-center space-x-5">
-          <a className="px-10 py-3 text-center text-white bg-blue-600 rounded shadow hover:bg-blue-500">
-            Get Started
+          <a className="px-10 py-3 text-center text-white bg-brand-orange rounded shadow hover:opacity-90">
+            Comenzar
           </a>
-          <a className="px-10 py-3 text-center text-blue-600 rounded shadow hover:bg-blue-50">
-            Live Demo
+          <a className="px-10 py-3 text-center text-brand-orange rounded shadow hover:bg-orange-50">
+            Demo en vivo
           </a>
         </div>
       </div>

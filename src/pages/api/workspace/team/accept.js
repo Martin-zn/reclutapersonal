@@ -1,4 +1,5 @@
-import { InvitationStatus } from '@prisma/client';
+// Local stand-in for values formerly from '@prisma/client'
+const InvitationStatus = { ACCEPTED: 'ACCEPTED' };
 import { updateStatus } from '@/prisma/services/membership';
 
 import { validateSession } from '@/config/api-validation';

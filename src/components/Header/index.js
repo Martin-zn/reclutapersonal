@@ -10,12 +10,12 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
-import { useTranslation } from "react-i18next";
+import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from 'next-themes';
 
 const Header = () => {
-  const { data } = useSession();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
 
@@ -23,7 +23,8 @@ const Header = () => {
     const result = confirm('Are you sure you want to logout?');
 
     if (result) {
-      signOut({ callbackUrl: '/' });
+      document.cookie = 'demoEmail=; Path=/; Max-Age=0';
+      router.replace('/');
     }
   };
 
@@ -33,19 +34,13 @@ const Header = () => {
   };
 
   return (
-    <div className="flex flex-row items-center justify-between">
-      <div>
-        <h5 className="font-bold text-gray-800 dark:text-gray-200">
-          {data && data.user && (
-            <span>{data.user.name || data.user.email}</span>
-          )}
-        </h5>
-      </div>
+    <div className="flex flex-row items-center justify-between bg-brand-blue text-white px-4 py-3 rounded">
+      <div />
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="flex items-center justify-center px-5 py-2 space-x-3 border rounded hover:bg-gray-100 dark:hover:text-gray-800">
-            <CogIcon aria-hidden="true" className="w-5 h-5" />
-            <span>Settings</span>
+          <Menu.Button className="flex items-center  justify-center px-5 py-2 space-x-3 border border-white rounded hover:bg-white/10">
+            <CogIcon aria-hidden="true" className="w-5 h-5 text-white" />
+            <span className=" text-white">Configuración</span>
           </Menu.Button>
         </div>
         <Transition
@@ -57,67 +52,67 @@ const Header = () => {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 w-40 mt-2 origin-top-right bg-white border divide-y divide-gray-100 rounded">
+          <Menu.Items className="absolute right-0 w-48 mt-2 origin-top-right bg-white border divide-y divide-gray-100 rounded text-text-primary">
             <div className="p-2">
               <Menu.Item>
                 <Link
                   href="/account/settings"
-                  className="flex items-center w-full px-2 py-2 space-x-2 text-sm text-gray-800 rounded hover:bg-blue-600 hover:text-white group"
+                  className="flex items-center w-full px-3 py-2 space-x-2 text-sm rounded hover:bg-brand-orange hover:text-white group"
                 >
                   <UserCircleIcon aria-hidden="true" className="w-5 h-5" />
-                  <span>{t("common.label.account")}</span>
+                  <span>{t('common.label.account')}</span>
                 </Link>
               </Menu.Item>
               <Menu.Item>
                 <Link
                   href="/account/billing"
-                  className="flex items-center w-full px-2 py-2 space-x-2 text-sm text-gray-800 rounded hover:bg-blue-600 hover:text-white group"
+                  className="flex items-center w-full px-3 py-2 space-x-2 text-sm rounded hover:bg-brand-orange hover:text-white group"
                 >
                   <CreditCardIcon aria-hidden="true" className="w-5 h-5" />
-                  <span>{t("common.label.billing")}</span>
+                  <span>{t('common.label.billing')}</span>
                 </Link>
               </Menu.Item>
             </div>
-            <div className="p-2">
+            {/* <div className="p-2">
               <Menu.Item>
                 <Link
                   href="/"
-                  className="flex items-center w-full px-2 py-2 space-x-2 text-sm text-gray-800 rounded hover:bg-blue-600 hover:text-white group"
+                  className="flex items-center w-full px-3 py-2 space-x-2 text-sm rounded hover:bg-brand-orange hover:text-white group"
                 >
                   <ComputerDesktopIcon aria-hidden="true" className="w-5 h-5" />
-                  <span>{t("common.label.landingpage")}</span>
+                  <span>{t('common.label.landingpage')}</span>
                 </Link>
               </Menu.Item>
               <Menu.Item>
                 <button
-                  className="flex items-center w-full px-2 py-2 space-x-2 text-sm text-gray-800 rounded hover:bg-blue-600 hover:text-white group"
+                  className="flex items-center w-full px-3 py-2 space-x-2 text-sm rounded hover:bg-brand-orange hover:text-white group"
                   onClick={toggleTheme}
                 >
                   {theme === 'dark' ? (
                     <>
                       <SunIcon className="w-5 h-5" />
-                      <span>{t("common.label.light.mode")}</span>
+                      <span>{t('common.label.light.mode')}</span>
                     </>
                   ) : (
                     <>
                       <MoonIcon className="w-5 h-5" />
-                      <span>{t("common.label.dark.mode")}</span>
+                      <span>{t('common.label.dark.mode')}</span>
                     </>
                   )}
                 </button>
               </Menu.Item>
-            </div>
+            </div> */}
             <div className="p-2">
               <Menu.Item>
                 <button
-                  className="flex items-center w-full px-2 py-2 space-x-2 text-sm text-gray-800 rounded hover:bg-blue-600 hover:text-white group"
+                  className="flex items-center w-full px-3 py-2 space-x-2 text-sm rounded hover:bg-brand-orange hover:text-white group"
                   onClick={logOut}
                 >
                   <ArrowRightOnRectangleIcon
                     aria-hidden="true"
                     className="w-5 h-5"
                   />
-                  <span>{t("common.label.logout")}</span>
+                  <span>{t('common.label.logout')}</span>
                 </button>
               </Menu.Item>
             </div>

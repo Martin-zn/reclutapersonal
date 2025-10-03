@@ -1,21 +1,30 @@
-import i18next from "i18next";
-
+import i18next from 'i18next';
 
 const sidebarMenu = () => [
   {
-    name: 'Account',
+    name: 'Procesos',
     menuItems: [
       {
-        name: 'common.label.dashboard',
-        path: `/account`,
+        name: 'Mis procesos',
+        path: `/account/procesos`,
       },
+    ],
+  },
+  {
+    name: 'Créditos',
+    menuItems: [
       {
-        name: 'common.label.billing',
+        name: 'Mis créditos',
         path: `/account/billing`,
       },
+    ],
+  },
+  {
+    name: 'Cuenta',
+    menuItems: [
       {
-        name: 'common.label.settings',
-        path: `/account/settings`,
+        name: 'Cerrar sesión',
+        path: `/auth/logout`,
       },
     ],
   },

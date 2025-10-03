@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -10,9 +9,15 @@ import api from '@/lib/common/api';
 import { getInvitation } from '@/prisma/services/workspace';
 
 const Invite = ({ workspace }) => {
-  const { data } = useSession();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const [isSubmitting, setSubmittingState] = useState(false);
+
+  useEffect(() => {
+    // Check for demo cookie
+    const hasDemo = document.cookie.includes('demoEmail=');
+    setIsAuthenticated(hasDemo);
+  }, []);
 
   const join = () => {
     setSubmittingState(true);
@@ -48,9 +53,9 @@ const Invite = ({ workspace }) => {
                 subtitle="You are invited to join this workspace."
               />
               <Card.Footer>
-                {data ? (
+                {isAuthenticated ? (
                   <Button
-                    className="text-white bg-blue-600 hover:bg-blue-500"
+                    className="text-white bg-brand-orange hover:opacity-90"
                     disabled={isSubmitting}
                     onClick={join}
                   >
@@ -59,7 +64,7 @@ const Invite = ({ workspace }) => {
                 ) : (
                   <Link
                     href="/auth/login"
-                    className="flex items-center justify-center px-5 py-2 space-x-3 text-white bg-blue-600 rounded hover:bg-blue-500"
+                    className="flex items-center justify-center px-5 py-2 space-x-3 text-white bg-brand-orange rounded hover:opacity-90"
                   >
                     Create an account
                   </Link>

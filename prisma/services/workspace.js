@@ -1,4 +1,6 @@
-import { InvitationStatus, TeamRole } from '@prisma/client';
+// Local stand-ins for values formerly from '@prisma/client'
+const InvitationStatus = { ACCEPTED: 'ACCEPTED', PENDING: 'PENDING' };
+const TeamRole = { OWNER: 'OWNER' };
 import slugify from 'slugify';
 
 import {

@@ -1,4 +1,5 @@
-import { InvitationStatus } from '@prisma/client';
+// Local stand-in for value formerly from '@prisma/client'
+const InvitationStatus = { PENDING: 'PENDING' };
 import prisma from '@/prisma/index';
 
 export const getMember = async (id) =>

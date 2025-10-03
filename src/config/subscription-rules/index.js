@@ -1,4 +1,9 @@
-import { SubscriptionType } from '@prisma/client';
+// Local stand-in for values formerly from '@prisma/client'
+const SubscriptionType = {
+  FREE: 'FREE',
+  STANDARD: 'STANDARD',
+  PREMIUM: 'PREMIUM',
+};
 
 const rules = {
   [SubscriptionType.FREE]: {

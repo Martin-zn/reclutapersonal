@@ -13,7 +13,7 @@ import Modal from '@/components/Modal/index';
 import { useWorkspaces } from '@/hooks/data/index';
 import api from '@/lib/common/api';
 import { useWorkspace } from '@/providers/workspace';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const Actions = () => {
   const { t } = useTranslation();
@@ -57,25 +57,16 @@ const Actions = () => {
 
   return (
     <div className="flex flex-col items-stretch justify-center px-5 space-y-3">
-      <Button
-        className="text-white bg-blue-600 hover:bg-blue-500"
-        onClick={toggleModal}
-      >
-        <PlusIcon className="w-5 h-5 text-white" aria-hidden="true" />
-        <span>{t('workspace.action.button.label')}</span>
-      </Button>
       <Modal show={showModal} title="Create a Workspace" toggle={toggleModal}>
-        <div className="space-y-0 text-sm text-gray-600">
-          <p>
-            {t("workspace.action.create.description.lineOne")}
-          </p>
-          <p>{t("workspace.action.create.description.lineTwo")}</p>
+        <div className="space-y-0 text-sm text-white">
+          <p>{t('workspace.action.create.description.lineOne')}</p>
+          <p>{t('workspace.action.create.description.lineTwo')}</p>
         </div>
         <div className="space-y-1">
-          <h3 className="text-xl font-bold">{t("workspace.action.name.label")}</h3>
-          <p className="text-sm text-gray-400">
-            {t("workspace.suggesion.label")}
-          </p>
+          <h3 className="text-xl font-bold">
+            {t('workspace.action.name.label')}
+          </h3>
+          <p className="text-sm text-white">{t('workspace.suggesion.label')}</p>
           <input
             className="w-full px-3 py-2 border rounded"
             disabled={isSubmitting}
@@ -87,24 +78,24 @@ const Actions = () => {
         <div className="flex flex-col items-stretch">
           <Button
             className="text-white bg-blue-600 hover:bg-blue-500"
-            disabled={!validName || isSubmitting}
+            // disabled={!validName || isSubmitting}
             onClick={createWorkspace}
           >
             <span>{t('workspace.action.button.label')}</span>
           </Button>
         </div>
       </Modal>
-      <Listbox value={workspace} onChange={handleWorkspaceChange}>
+      {/* <Listbox value={workspace} onChange={handleWorkspaceChange}>
         <div className="relative">
           <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default">
             <span className="block text-gray-600 truncate">
               {isLoading
                 ? 'Fetching workspaces...'
                 : data?.workspaces.length === 0
-                  ? t("workspace.message.notfound")
-                  : workspace === null
-                    ? t("workspace.action.label.select")
-                    : workspace.name}
+                ? t('workspace.message.notfound')
+                : workspace === null
+                ? t('workspace.action.label.select')
+                : workspace.name}
             </span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
               <ChevronUpDownIcon
@@ -157,7 +148,7 @@ const Actions = () => {
             </Transition>
           )}
         </div>
-      </Listbox>
+      </Listbox> */}
     </div>
   );
 };

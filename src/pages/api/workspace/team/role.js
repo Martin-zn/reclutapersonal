@@ -1,4 +1,5 @@
-import { TeamRole } from '@prisma/client';
+// Local stand-in for values formerly from '@prisma/client'
+const TeamRole = { OWNER: 'OWNER', ADMIN: 'ADMIN', MEMBER: 'MEMBER' };
 
 import { validateSession } from '@/config/api-validation';
 import { getMember, toggleRole } from '@/prisma/services/membership';

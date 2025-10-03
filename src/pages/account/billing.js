@@ -1,182 +1,129 @@
 import { useState } from 'react';
-import formatDistance from 'date-fns/formatDistance';
-import Link from 'next/link';
-import { getSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
 
 import Button from '@/components/Button/index';
 import Card from '@/components/Card/index';
 import Content from '@/components/Content/index';
 import Meta from '@/components/Meta/index';
-import Modal from '@/components/Modal/index';
 import { AccountLayout } from '@/layouts/index';
-import api from '@/lib/common/api';
-import { redirectToCheckout } from '@/lib/client/stripe';
-import { getInvoices, getProducts } from '@/lib/server/stripe';
-import { getPayment } from '@/prisma/services/customer';
 
-const Billing = ({ invoices, products }) => {
-  const [isSubmitting, setSubmittingState] = useState(false);
-  const [showModal, setModalVisibility] = useState(false);
+const Billing = () => {
+  const [creditos] = useState(100);
+  const [historial] = useState([
+    {
+      id: 1,
+      fecha: '2024-01-15',
+      descripcion: 'Compra de créditos',
+      monto: '+50',
+      tipo: 'compra'
+    },
+    {
+      id: 2,
+      fecha: '2024-01-10',
+      descripcion: 'Solicitud de personal - Maestro de Obra',
+      monto: '-5',
+      tipo: 'uso'
+    },
+    {
+      id: 3,
+      fecha: '2024-01-08',
+      descripcion: 'Solicitud de personal - Ayudante',
+      monto: '-3',
+      tipo: 'uso'
+    },
+    {
+      id: 4,
+      fecha: '2024-01-05',
+      descripcion: 'Compra de créditos',
+      monto: '+30',
+      tipo: 'compra'
+    }
+  ]);
 
-  const subscribe = (priceId) => {
-    setSubmittingState(true);
-    api(`/api/payments/subscription/${priceId}`, {
-      method: 'POST',
-    }).then((response) => {
-      setSubmittingState(false);
-
-      if (response.errors) {
-        Object.keys(response.errors).forEach((error) =>
-          toast.error(response.errors[error].msg)
-        );
-      } else {
-        (async () => redirectToCheckout(response.data.sessionId))();
-      }
-    });
+  const getMontoColor = (tipo) => {
+    return tipo === 'compra' ? 'text-green-600' : 'text-red-600';
   };
 
-  const toggleModal = () => setModalVisibility(!showModal);
+  const getMontoSigno = (tipo) => {
+    return tipo === 'compra' ? '+' : '-';
+  };
 
   return (
     <AccountLayout>
-      <Meta title="Nextacular - Billing" />
+      <Meta title="reclutapersonal - Créditos" />
       <Content.Title
-        title="Billing"
-        subtitle="Manage your billing and preferences"
+        title="Mis Créditos"
+        subtitle="Gestiona tus créditos y revisa el historial de transacciones"
       />
       <Content.Divider />
       <Content.Container>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Saldo de Créditos */}
+          <Card>
+            <Card.Body title="Saldo Actual" />
+            <div className="p-6 text-center">
+              <div className="text-4xl font-bold text-brand-blue mb-2">
+                {creditos}
+              </div>
+              <p className="text-gray-600 mb-4">créditos disponibles</p>
+              <Button variant="primary">
+                Comprar Créditos
+              </Button>
+            </div>
+          </Card>
+
+          {/* Información de Precios */}
+          <Card>
+            <Card.Body title="Precios de Créditos" />
+            <div className="p-6 space-y-3">
+              <div className="flex justify-between items-center">
+                <span>10 créditos</span>
+                <span className="font-bold">$5.000</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>50 créditos</span>
+                <span className="font-bold">$20.000</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>100 créditos</span>
+                <span className="font-bold">$35.000</span>
+              </div>
+              <div className="flex justify-between items-center border-t pt-3">
+                <span className="font-bold">200 créditos</span>
+                <span className="font-bold text-brand-orange">$60.000</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Historial de Transacciones */}
         <Card>
-          <Card.Body
-            title="Upgrade Plan"
-            subtitle="You are currently under the&nbsp; FREE plan"
-          >
-            <p className="p-3 text-sm border rounded">
-              Personal accounts cannot be upgraded and will remain free forever.
-              In order to use the platform for professional purposes or work
-              with a team, get started by creating a team or contacting sales.
-            </p>
-          </Card.Body>
-          <Card.Footer>
-            <small>You will be redirected to the payment page</small>
-            <Button
-              className="text-white bg-blue-600 hover:bg-blue-500"
-              disabled={isSubmitting}
-              onClick={toggleModal}
-            >
-              Upgrade
-            </Button>
-          </Card.Footer>
-        </Card>
-        <Modal
-          show={showModal}
-          title="Upgrade Subscription"
-          toggle={toggleModal}
-        >
-          <div className="space-y-0 text-sm text-gray-600">
-            <p>You are currently under the FREE plan</p>
-          </div>
-          <div className="flex space-x-5">
-            {products.map((product, index) => (
-              <Card key={index}>
-                <Card.Body title={product.name} subtitle={product.description}>
-                  <h3 className="text-4xl font-bold">
-                    ${Number(product.prices.unit_amount / 100).toFixed(2)}
-                  </h3>
-                </Card.Body>
-                <Card.Footer>
-                  <Button
-                    className="w-full text-white bg-blue-600 hover:bg-blue-500"
-                    disabled={isSubmitting}
-                    onClick={() => subscribe(product.prices.id)}
-                  >
-                    {isSubmitting
-                      ? 'Redirecting...'
-                      : `Upgrade to ${product.name}`}
-                  </Button>
-                </Card.Footer>
-              </Card>
-            ))}
-          </div>
-        </Modal>
-      </Content.Container>
-      <Content.Divider thick />
-      <Content.Title
-        title="Invoices"
-        subtitle="View and download invoices you may need"
-      />
-      <Content.Divider />
-      {invoices.length > 0 ? (
-        <Content.Container>
-          <table className="table-auto">
-            <thead>
-              <tr className="text-left">
-                <th>Invoice Number</th>
-                <th>Created</th>
-                <th>Status</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map((invoice, index) => (
-                <tr key={index} className="text-sm hover:bg-gray-100">
-                  <td className="px-3 py-5">
-                    <Link
-                      href={invoice.hosted_invoice_url}
-                      className="text-blue-600"
-                      target="_blank"
-                    >
-                      {invoice.number}
-                    </Link>
-                  </td>
-                  <td className="py-5">
-                    {formatDistance(
-                      new Date(invoice.created * 1000),
-                      new Date(),
-                      {
-                        addSuffix: true,
-                      }
-                    )}
-                  </td>
-                  <td className="py-5">{invoice.status}</td>
-                  <td className="py-5">
-                    <Link
-                      href={invoice.hosted_invoice_url}
-                      className="text-blue-600"
-                      target="_blank"
-                    >
-                      &rarr;
-                    </Link>
-                  </td>
+          <Card.Body title="Historial de Transacciones" />
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3">Fecha</th>
+                  <th className="px-6 py-3">Descripción</th>
+                  <th className="px-6 py-3">Monto</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Content.Container>
-      ) : (
-        <Content.Empty>
-          Once you&apos;ve paid for something on Nextacular, invoices will show
-          up here
-        </Content.Empty>
-      )}
+              </thead>
+              <tbody>
+                {historial.map((transaccion) => (
+                  <tr key={transaccion.id} className="bg-white border-b hover:bg-gray-50">
+                    <td className="px-6 py-4">{transaccion.fecha}</td>
+                    <td className="px-6 py-4">{transaccion.descripcion}</td>
+                    <td className={`px-6 py-4 font-medium ${getMontoColor(transaccion.tipo)}`}>
+                      {getMontoSigno(transaccion.tipo)}{transaccion.monto} créditos
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </Content.Container>
     </AccountLayout>
   );
-};
-
-export const getServerSideProps = async (context) => {
-  const session = await getSession(context);
-  const customerPayment = await getPayment(session.user?.email);
-  const [invoices, products] = await Promise.all([
-    getInvoices(customerPayment?.paymentId),
-    getProducts(),
-  ]);
-  return {
-    props: {
-      invoices,
-      products,
-    },
-  };
 };
 
 export default Billing;

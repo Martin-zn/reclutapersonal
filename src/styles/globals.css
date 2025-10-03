@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  h1, h2 {
+    @apply text-text-primary;
+  }
+  p, li, span {
+    @apply text-text-body;
+  }
+  body {
+    @apply bg-section-light text-text-body;
+  }
+}
