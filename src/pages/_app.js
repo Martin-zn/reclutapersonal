@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import Router, { useRouter } from 'next/router';
+import { useState } from 'react';
+import Router from 'next/router';
 import { ThemeProvider } from 'next-themes';
-import ReactGA from 'react-ga';
 import TopBarProgress from 'react-topbar-progress-indicator';
 import { SWRConfig } from 'swr';
 import i18n from 'i18next';
@@ -31,30 +30,11 @@ i18n.use(initReactI18next).init({
 const App = ({ Component, pageProps }) => {
   const [progress, setProgress] = useState(false);
   const { t } = useTranslation();
-  const router = useRouter();
   const swrOptions = swrConfig();
 
   Router.events.on('routeChangeStart', () => setProgress(true));
   Router.events.on('routeChangeComplete', () => setProgress(false));
   TopBarProgress.config(progressBarConfig());
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      ReactGA.initialize(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleRouteChange = (url) => {
-      ReactGA.pageview(url);
-    };
-
-    router.events.on('routeChangeComplete', handleRouteChange);
-
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [router.events]);
 
   return (
     <SWRConfig value={swrOptions}>
