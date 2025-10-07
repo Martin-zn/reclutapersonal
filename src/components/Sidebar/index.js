@@ -44,10 +44,8 @@ const Sidebar = ({ menu }) => {
           href="/account"
           className="flex items-center justify-center space-x-2"
         >
-          <span className="text-2xl font-bold text-white">RP</span>
-          <span className="text-2xl font-bold text-white">
-            RECLUTA PERSONAL
-          </span>
+          {/* <span className="text-2xl font-bold text-white">RP</span> */}
+          <span className="text-2xl font-bold text-white">RECLUTECH</span>
         </Link>
         <button className="absolute right-0 p-5 md:hidden" onClick={toggleMenu}>
           <Bars3Icon className="w-6 h-6" />
@@ -64,7 +62,7 @@ const Sidebar = ({ menu }) => {
         <Actions />
         <div className="mt-auto p-5">
           <button
-            className="w-full flex items-center justify-center px-5 py-2 rounded  bg-white/10 hover:bg-white/20 text-white space-x-2"
+            className="w-full flex items-center justify-center px-5 py-2 rounded  bg-brand-orange hover:bg-white/20 text-white space-x-2"
             onClick={() => {
               window.location.href = '/account/nuevo-proceso';
             }}

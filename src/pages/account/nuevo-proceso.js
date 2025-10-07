@@ -1,6 +1,88 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+
+const especialidades = [
+  'Jornal',
+  'Pintor',
+  'Electricista',
+  'Gasfíter',
+  'Carpintero',
+  'Albañil',
+  'Ceramista',
+  'Soldador',
+  'Yesero',
+  'Operador de Maquinaria',
+];
+
+const regiones = [
+  {
+    name: 'Arica y Parinacota',
+    communes: ['Arica', 'Camarones', 'Putre', 'General Lagos'],
+  },
+  {
+    name: 'Tarapacá',
+    communes: ['Iquique', 'Alto Hospicio', 'Pozo Almonte', 'Pica'],
+  },
+  {
+    name: 'Antofagasta',
+    communes: ['Antofagasta', 'Calama', 'Tocopilla', 'San Pedro de Atacama'],
+  },
+  {
+    name: 'Atacama',
+    communes: ['Copiapó', 'Caldera', 'Vallenar', 'Chañaral'],
+  },
+  {
+    name: 'Coquimbo',
+    communes: ['La Serena', 'Coquimbo', 'Ovalle', 'Illapel'],
+  },
+  {
+    name: 'Valparaíso',
+    communes: ['Valparaíso', 'Viña del Mar', 'Quillota', 'San Antonio'],
+  },
+  {
+    name: 'Metropolitana de Santiago',
+    communes: ['Santiago', 'Puente Alto', 'Maipú', 'Las Condes'],
+  },
+  {
+    name: "Libertador General Bernardo O'Higgins",
+    communes: ['Rancagua', 'San Fernando', 'Santa Cruz', 'Rengo'],
+  },
+  {
+    name: 'Maule',
+    communes: ['Talca', 'Curicó', 'Linares', 'Constitución'],
+  },
+  {
+    name: 'Ñuble',
+    communes: ['Chillán', 'San Carlos', 'Coihueco', 'Bulnes'],
+  },
+  {
+    name: 'Biobío',
+    communes: ['Concepción', 'Los Ángeles', 'Coronel', 'Lota'],
+  },
+  {
+    name: 'La Araucanía',
+    communes: ['Temuco', 'Villarrica', 'Angol', 'Pucón'],
+  },
+  {
+    name: 'Los Ríos',
+    communes: ['Valdivia', 'La Unión', 'Panguipulli', 'Río Bueno'],
+  },
+  {
+    name: 'Los Lagos',
+    communes: ['Puerto Montt', 'Osorno', 'Castro', 'Ancud'],
+  },
+  {
+    name: 'Aysén del General Carlos Ibáñez del Campo',
+    communes: ['Coyhaique', 'Aysén', 'Chile Chico', 'Cochrane'],
+  },
+  {
+    name: 'Magallanes y de la Antártica Chilena',
+    communes: ['Punta Arenas', 'Puerto Natales', 'Porvenir', 'Cabo de Hornos'],
+  },
+];
+
+// Resto de regiones omitidas por brevedad
 
 import Button from '@/components/Button/index';
 import Card from '@/components/Card/index';
@@ -14,45 +96,102 @@ const NuevoProceso = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [formData, setFormData] = useState({
     // Datos básicos
-
     titulo: '',
     descripcion: '',
     cantidadTrabajadores: '',
-    salario: '',
-    ciudad: '',
+    especialidad: '',
+    salarioMin: '',
+    salarioMax: '',
+    region: '',
     comuna: '',
     direccion: '',
-    requisitos: '',
-    beneficios: '',
     tipoContrato: '',
-    horario: '',
-    fechaInicio: '',
-    // Filtros personalizados
-    filtros: [],
+    horarioInicio: '',
+    horarioFin: '',
+    requisitos: [],
+    beneficios: [],
   });
 
-  const handleAddFilter = () => {
-    setFormData((prevState) => ({
-      ...prevState,
-      filtros: [...prevState.filtros, { tipo: '', valor: '' }],
-    }));
+  const requisitosOpciones = [
+    'Edad mínima: 18 años',
+    'Edad máxima: 50 años',
+    'Experiencia mínima: 1 año',
+    'Experiencia mínima: 2 años',
+    'Experiencia mínima: 3 años',
+    'Experiencia mínima: 5 años',
+    'Disponibilidad para viajar',
+    'Disponibilidad para trabajar en turnos',
+    'Licencia de conducir clase B',
+    'Residencia en la zona',
+    'Manejo de herramientas específicas',
+    'Certificaciones vigentes',
+    'Trabajo en altura',
+    'Trabajo en espacios confinados'
+  ];
+
+  const beneficiosOpciones = [
+    'Seguro de salud complementario',
+    'Seguro de vida',
+    'Aguinaldo',
+    'Bono de producción',
+    'Bono de asistencia',
+    'Alimentación',
+    'Transporte',
+    'Uniforme',
+    'Capacitación',
+    'Posibilidad de desarrollo',
+    'Estacionamiento',
+    'Gimnasio',
+    'Días administrativos',
+    'Horario flexible'
+  ];
+
+  const agregarRequisito = (requisito) => {
+    if (requisito && !formData.requisitos.includes(requisito)) {
+      setFormData({
+        ...formData,
+        requisitos: [...formData.requisitos, requisito]
+      });
+    }
   };
 
-  const handleFilterChange = (index, field, value) => {
-    const newFiltros = [...formData.filtros];
-    newFiltros[index][field] = value;
-    setFormData((prevState) => ({
-      ...prevState,
-      filtros: newFiltros,
-    }));
+  const eliminarRequisito = (index) => {
+    setFormData({
+      ...formData,
+      requisitos: formData.requisitos.filter((_, i) => i !== index),
+    });
   };
 
-  const handleRemoveFilter = (index) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      filtros: prevState.filtros.filter((_, i) => i !== index),
-    }));
+  const agregarBeneficio = (beneficio) => {
+    if (beneficio && !formData.beneficios.includes(beneficio)) {
+      setFormData({
+        ...formData,
+        beneficios: [...formData.beneficios, beneficio]
+      });
+    }
   };
+
+  const eliminarBeneficio = (index) => {
+    setFormData({
+      ...formData,
+      beneficios: formData.beneficios.filter((_, i) => i !== index),
+    });
+  };
+
+  const [comunasDisponibles, setComunasDisponibles] = useState([]);
+
+  useEffect(() => {
+    if (formData.region) {
+      const regionSeleccionada = regiones.find(
+        (r) => r.name === formData.region
+      );
+      if (regionSeleccionada) {
+        setComunasDisponibles(regionSeleccionada.communes);
+      }
+    } else {
+      setComunasDisponibles([]);
+    }
+  }, [formData.region]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,16 +206,53 @@ const NuevoProceso = () => {
       formData.titulo &&
       formData.descripcion &&
       formData.cantidadTrabajadores &&
-      formData.salario &&
-      formData.ciudad &&
+      formData.especialidad &&
+      formData.salarioMin &&
+      formData.salarioMax &&
+      formData.region &&
       formData.comuna &&
-      formData.direccion
+      formData.direccion &&
+      formData.horarioInicio &&
+      formData.horarioFin
     );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid()) return;
+
+    // Validar campos requeridos
+    if (
+      !formData.titulo ||
+      !formData.descripcion ||
+      !formData.cantidadTrabajadores ||
+      !formData.especialidad ||
+      !formData.salarioMin ||
+      !formData.salarioMax ||
+      !formData.tipoContrato ||
+      !formData.horarioInicio ||
+      !formData.horarioFin ||
+      !formData.region ||
+      !formData.comuna ||
+      !formData.direccion ||
+      formData.requisitos.length === 0 ||
+      formData.beneficios.length === 0
+    ) {
+      alert('Por favor, complete todos los campos requeridos');
+      return;
+    }
+
+    // Validar que el salario máximo sea mayor que el mínimo
+    if (Number(formData.salarioMax) <= Number(formData.salarioMin)) {
+      alert('El salario máximo debe ser mayor que el salario mínimo');
+      return;
+    }
+
+    // Validar que la hora de término sea posterior a la hora de inicio
+    if (formData.horarioFin <= formData.horarioInicio) {
+      alert('La hora de término debe ser posterior a la hora de inicio');
+      return;
+    }
+
     setShowConfirmModal(true);
   };
 
@@ -117,8 +293,8 @@ const NuevoProceso = () => {
         <Card>
           <form onSubmit={handleSubmit}>
             <div className="p-6 space-y-6">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="col-span-1">
+              <div className="space-y-6">
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Título del Proceso *
                   </label>
@@ -132,25 +308,48 @@ const NuevoProceso = () => {
                     placeholder="Ej: Operarios de Construcción"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Cantidad de Trabajadores *
-                  </label>
-                  <input
-                    type="number"
-                    name="cantidadTrabajadores"
-                    value={formData.cantidadTrabajadores}
-                    onChange={handleInputChange}
-                    required
-                    min="1"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                  />
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Especialidad *
+                    </label>
+                    <select
+                      name="especialidad"
+                      value={formData.especialidad}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                    >
+                      <option value="">Seleccionar especialidad</option>
+                      {especialidades.map((esp) => (
+                        <option key={esp} value={esp}>
+                          {esp}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Cantidad de Trabajadores *
+                    </label>
+                    <input
+                      type="number"
+                      name="cantidadTrabajadores"
+                      value={formData.cantidadTrabajadores}
+                      onChange={handleInputChange}
+                      required
+                      min="1"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Descripción del Trabajo *
+                  Descripción de la oferta *
                 </label>
                 <textarea
                   name="descripcion"
@@ -164,75 +363,107 @@ const NuevoProceso = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Salario *
-                  </label>
-                  <input
-                    type="text"
-                    name="salario"
-                    value={formData.salario}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                    placeholder="Ej: $500.000 - $700.000"
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ciudad *
+                      Salario Mínimo *
                     </label>
                     <input
-                      type="text"
-                      name="ciudad"
-                      value={formData.ciudad}
+                      type="number"
+                      name="salarioMin"
+                      value={formData.salarioMin}
+                      onChange={handleInputChange}
+                      required
+                      min="0"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                      placeholder="Ej: 500000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Salario Máximo *
+                    </label>
+                    <input
+                      type="number"
+                      name="salarioMax"
+                      value={formData.salarioMax}
+                      onChange={handleInputChange}
+                      required
+                      min="0"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                      placeholder="Ej: 700000"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Región *
+                    </label>
+                    <select
+                      name="region"
+                      value={formData.region}
                       onChange={handleInputChange}
                       required
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                      placeholder="Ej: Santiago"
-                    />
+                    >
+                      <option value="">Seleccionar región</option>
+                      {regiones.map((region) => (
+                        <option key={region.name} value={region.name}>
+                          {region.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Comuna *
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="comuna"
                       value={formData.comuna}
                       onChange={handleInputChange}
                       required
+                      disabled={!formData.region}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                      placeholder="Ej: Las Condes"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Dirección General *
-                    </label>
-                    <input
-                      type="text"
-                      name="direccion"
-                      value={formData.direccion}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                      placeholder="Ej: Av. Apoquindo 1234"
-                    />
+                    >
+                      <option value="">Seleccionar comuna</option>
+                      {comunasDisponibles.map((comuna) => (
+                        <option key={comuna} value={comuna}>
+                          {comuna}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Dirección General *
+                </label>
+                <input
+                  type="text"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                  placeholder="Ej: Av. Apoquindo 1234"
+                />
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tipo de Contrato
+                    Tipo de Contrato *
                   </label>
                   <select
                     name="tipoContrato"
                     value={formData.tipoContrato}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
                   >
                     <option value="">Seleccionar</option>
@@ -241,108 +472,109 @@ const NuevoProceso = () => {
                     <option value="porObra">Por Obra</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Fecha de Inicio
-                  </label>
-                  <input
-                    type="date"
-                    name="fechaInicio"
-                    value={formData.fechaInicio}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                  />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Hora de Inicio *
+                    </label>
+                    <input
+                      type="time"
+                      name="horarioInicio"
+                      value={formData.horarioInicio}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Hora de Término *
+                    </label>
+                    <input
+                      type="time"
+                      name="horarioFin"
+                      value={formData.horarioFin}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Horario de Trabajo
-                </label>
-                <input
-                  type="text"
-                  name="horario"
-                  value={formData.horario}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                  placeholder="Ej: Lunes a Viernes 8:00 - 18:00"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Requisitos
-                </label>
-                <textarea
-                  name="requisitos"
-                  value={formData.requisitos}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                  placeholder="Requisitos específicos para el puesto"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Beneficios
-                </label>
-                <textarea
-                  name="beneficios"
-                  value={formData.beneficios}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                  placeholder="Beneficios adicionales del trabajo"
-                />
-              </div>
-
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Filtros Personalizados
-                </h3>
-                {formData.filtros.map((filtro, index) => (
-                  <div key={index} className="flex items-center gap-4 mb-4">
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={filtro.tipo}
-                        onChange={(e) =>
-                          handleFilterChange(index, 'tipo', e.target.value)
-                        }
-                        placeholder="Tipo de filtro (ej: distancia, edad)"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={filtro.valor}
-                        onChange={(e) =>
-                          handleFilterChange(index, 'valor', e.target.value)
-                        }
-                        placeholder="Valor del filtro"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleRemoveFilter(index)}
-                      className="px-3 py-2"
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Requisitos *
+                  </label>
+                  <div className="space-y-4">
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                      onChange={(e) => agregarRequisito(e.target.value)}
+                      value=""
                     >
-                      Eliminar
-                    </Button>
+                      <option value="">Seleccionar requisito</option>
+                      {requisitosOpciones.map((requisito) => (
+                        <option key={requisito} value={requisito}>
+                          {requisito}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="space-y-2">
+                      {formData.requisitos.map((requisito, index) => (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
+                          <span className="flex-1">{requisito}</span>
+                          <button
+                            type="button"
+                            onClick={() => eliminarRequisito(index)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleAddFilter}
-                  className="mt-2"
-                >
-                  Agregar Filtro
-                </Button>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Beneficios *
+                  </label>
+                  <div className="space-y-4">
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                      onChange={(e) => agregarBeneficio(e.target.value)}
+                      value=""
+                    >
+                      <option value="">Seleccionar beneficio</option>
+                      {beneficiosOpciones.map((beneficio) => (
+                        <option key={beneficio} value={beneficio}>
+                          {beneficio}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="space-y-2">
+                      {formData.beneficios.map((beneficio, index) => (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
+                          <span className="flex-1">{beneficio}</span>
+                          <button
+                            type="button"
+                            onClick={() => eliminarBeneficio(index)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <Card.Footer>
@@ -382,24 +614,39 @@ const NuevoProceso = () => {
                   <p>{formData.titulo}</p>
                 </div>
                 <div>
+                  <p className="font-semibold">Especialidad:</p>
+                  <p>{formData.especialidad}</p>
+                </div>
+                <div>
                   <p className="font-semibold">Cantidad de Trabajadores:</p>
                   <p>{formData.cantidadTrabajadores}</p>
                 </div>
                 <div>
-                  <p className="font-semibold">Ubicación:</p>
-                  <p>{formData.ubicacion}</p>
+                  <p className="font-semibold">Salario:</p>
+                  <p>
+                    ${formData.salarioMin.toLocaleString()} - $
+                    {formData.salarioMax.toLocaleString()}
+                  </p>
                 </div>
                 <div>
-                  <p className="font-semibold">Salario:</p>
-                  <p>{formData.salario}</p>
+                  <p className="font-semibold">Ubicación:</p>
+                  <p>
+                    {formData.region}, {formData.comuna}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-semibold">Dirección:</p>
+                  <p>{formData.direccion}</p>
                 </div>
                 <div>
                   <p className="font-semibold">Tipo de Contrato:</p>
-                  <p>{formData.tipoContrato || 'No especificado'}</p>
+                  <p>{formData.tipoContrato}</p>
                 </div>
                 <div>
-                  <p className="font-semibold">Fecha de Inicio:</p>
-                  <p>{formData.fechaInicio || 'No especificada'}</p>
+                  <p className="font-semibold">Horario:</p>
+                  <p>
+                    {formData.horarioInicio} - {formData.horarioFin}
+                  </p>
                 </div>
               </div>
 
@@ -408,19 +655,41 @@ const NuevoProceso = () => {
                 <p>{formData.descripcion}</p>
               </div>
 
-              {formData.requisitos && (
-                <div>
-                  <p className="font-semibold">Requisitos:</p>
-                  <p>{formData.requisitos}</p>
-                </div>
-              )}
+              <div>
+                <p className="font-semibold">Requisitos:</p>
+                <ul className="list-disc list-inside ml-4">
+                  {formData.requisitos.map((req, index) => (
+                    <li key={index}>{req}</li>
+                  ))}
+                </ul>
+              </div>
 
-              {formData.beneficios && (
-                <div>
-                  <p className="font-semibold">Beneficios:</p>
-                  <p>{formData.beneficios}</p>
-                </div>
-              )}
+              <div>
+                <p className="font-semibold">Beneficios:</p>
+                <ul className="list-disc list-inside ml-4">
+                  {formData.beneficios.map((ben, index) => (
+                    <li key={index}>{ben}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <p className="font-semibold">Requisitos:</p>
+              <ul className="list-disc list-inside ml-4">
+                {formData.requisitos.map((req, index) => (
+                  <li key={index}>{req}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="font-semibold">Beneficios:</p>
+              <ul className="list-disc list-inside ml-4">
+                {formData.beneficios.map((ben, index) => (
+                  <li key={index}>{ben}</li>
+                ))}
+              </ul>
             </div>
 
             <div className="border-t pt-4 mb-6">

@@ -7,36 +7,36 @@ import Meta from '@/components/Meta/index';
 import { AccountLayout } from '@/layouts/index';
 
 const Billing = () => {
-  const [creditos] = useState(100);
+  const [saldo] = useState(100000);
   const [historial] = useState([
     {
       id: 1,
       fecha: '2024-01-15',
-      descripcion: 'Compra de créditos',
-      monto: '+50',
-      tipo: 'compra'
+      descripcion: 'Depósito',
+      monto: '+50000',
+      tipo: 'compra',
     },
     {
       id: 2,
       fecha: '2024-01-10',
       descripcion: 'Solicitud de personal - Maestro de Obra',
-      monto: '-5',
-      tipo: 'uso'
+      monto: '-5000',
+      tipo: 'uso',
     },
     {
       id: 3,
       fecha: '2024-01-08',
       descripcion: 'Solicitud de personal - Ayudante',
-      monto: '-3',
-      tipo: 'uso'
+      monto: '-3000',
+      tipo: 'uso',
     },
     {
       id: 4,
       fecha: '2024-01-05',
-      descripcion: 'Compra de créditos',
-      monto: '+30',
-      tipo: 'compra'
-    }
+      descripcion: 'Depósito',
+      monto: '+30000',
+      tipo: 'compra',
+    },
   ]);
 
   const getMontoColor = (tipo) => {
@@ -62,34 +62,17 @@ const Billing = () => {
             <Card.Body title="Saldo Actual" />
             <div className="p-6 text-center">
               <div className="text-4xl font-bold text-brand-blue mb-2">
-                {creditos}
+                ${new Intl.NumberFormat('es-CL').format(saldo)}
               </div>
-              <p className="text-gray-600 mb-4">créditos disponibles</p>
-              <Button variant="primary">
-                Comprar Créditos
-              </Button>
+              <p className="text-gray-600 mb-4">pesos disponibles</p>
             </div>
           </Card>
-
-          {/* Información de Precios */}
           <Card>
-            <Card.Body title="Precios de Créditos" />
-            <div className="p-6 space-y-3">
-              <div className="flex justify-between items-center">
-                <span>10 créditos</span>
-                <span className="font-bold">$5.000</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>50 créditos</span>
-                <span className="font-bold">$20.000</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>100 créditos</span>
-                <span className="font-bold">$35.000</span>
-              </div>
-              <div className="flex justify-between items-center border-t pt-3">
-                <span className="font-bold">200 créditos</span>
-                <span className="font-bold text-brand-orange">$60.000</span>
+            <Card.Body title="Acciones" />
+            <div className="p-6 text-center">
+              <div className="space-y-4">
+                <Button variant="primary" className="w-full">Depositar</Button>
+                <Button variant="secondary" className="w-full">Retirar</Button>
               </div>
             </div>
           </Card>
@@ -109,11 +92,19 @@ const Billing = () => {
               </thead>
               <tbody>
                 {historial.map((transaccion) => (
-                  <tr key={transaccion.id} className="bg-white border-b hover:bg-gray-50">
+                  <tr
+                    key={transaccion.id}
+                    className="bg-white border-b hover:bg-gray-50"
+                  >
                     <td className="px-6 py-4">{transaccion.fecha}</td>
                     <td className="px-6 py-4">{transaccion.descripcion}</td>
-                    <td className={`px-6 py-4 font-medium ${getMontoColor(transaccion.tipo)}`}>
-                      {getMontoSigno(transaccion.tipo)}{transaccion.monto} créditos
+                    <td
+                      className={`px-6 py-4 font-medium ${getMontoColor(
+                        transaccion.tipo
+                      )}`}
+                    >
+                      {getMontoSigno(transaccion.tipo)}
+                      ${new Intl.NumberFormat('es-CL').format(transaccion.monto)}
                     </td>
                   </tr>
                 ))}

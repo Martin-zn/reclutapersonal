@@ -20,7 +20,7 @@ const Procesos = () => {
       ubicacion: 'Santiago, RM',
       salario: '$500.000 - $700.000',
       estado: 'Activo',
-      fechaCreacion: '2024-03-20',
+      fechaCreacion: '2025-09-20',
       postulantes: 2,
       candidatos: [
         {
@@ -44,7 +44,7 @@ const Procesos = () => {
       ubicacion: 'Valparaíso',
       salario: '$450.000 - $600.000',
       estado: 'En Revisión',
-      fechaCreacion: '2024-03-19',
+      fechaCreacion: '2025-10-01',
       postulantes: 1,
       candidatos: [
         {

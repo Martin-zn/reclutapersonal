@@ -19,15 +19,6 @@ const sidebarMenu = () => [
       },
     ],
   },
-  {
-    name: 'Cuenta',
-    menuItems: [
-      {
-        name: 'Cerrar sesión',
-        path: `/auth/logout`,
-      },
-    ],
-  },
 ];
 
 export default sidebarMenu;
