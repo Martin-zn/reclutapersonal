@@ -187,7 +187,7 @@ const NuevoProceso = () => {
   ];
 
   const agregarFiltro = (tipo) => {
-    if (tipo && !formData.filtros.some(f => f.tipo === tipo)) {
+    if (tipo && !formData.filtros.some((f) => f.tipo === tipo)) {
       setFormData({
         ...formData,
         filtros: [...formData.filtros, { tipo, detalle: '' }],
@@ -237,7 +237,7 @@ const NuevoProceso = () => {
   ];
 
   const agregarRequisito = (tipo) => {
-    if (tipo && !formData.requisitos.some(r => r.tipo === tipo)) {
+    if (tipo && !formData.requisitos.some((r) => r.tipo === tipo)) {
       setFormData({
         ...formData,
         requisitos: [...formData.requisitos, { tipo, detalle: '' }],
@@ -627,7 +627,9 @@ const NuevoProceso = () => {
                           <input
                             type="text"
                             value={filtro.detalle}
-                            onChange={(e) => updateFiltroDetalle(index, e.target.value)}
+                            onChange={(e) =>
+                              updateFiltroDetalle(index, e.target.value)
+                            }
                             className="flex-1 px-2 py-1 border border-gray-300 rounded-md"
                             placeholder="Especifique el criterio"
                           />
@@ -730,7 +732,9 @@ const NuevoProceso = () => {
                           <input
                             type="text"
                             value={req.detalle}
-                            onChange={(e) => updateRequisitoDetalle(index, e.target.value)}
+                            onChange={(e) =>
+                              updateRequisitoDetalle(index, e.target.value)
+                            }
                             className="flex-1 px-2 py-1 border border-gray-300 rounded-md"
                             placeholder="Detalle (ej: años, clase, etc.)"
                           />
@@ -783,8 +787,12 @@ const NuevoProceso = () => {
 
       {/* Modal de Confirmación */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center  z-50">
-          <div className="bg-white rounded-lg w-full max-w-2xl p-6">
+        <div
+          style={{ marginTop: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 mt-0"
+        >
+          {/* Modal */}
+          <div className="bg-white rounded-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto mt-10 mb-10 mx-4">
             <h3 className="text-lg font-bold mb-4">
               Confirmar Creación de Proceso
             </h3>
@@ -841,7 +849,10 @@ const NuevoProceso = () => {
                 <p className="font-semibold">Requisitos:</p>
                 <ul className="list-disc list-inside ml-4">
                   {formData.requisitos.map((req, index) => (
-                    <li key={index}>{req.tipo}{req.detalle ? `: ${req.detalle}` : ''}</li>
+                    <li key={index}>
+                      {req.tipo}
+                      {req.detalle ? `: ${req.detalle}` : ''}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -850,7 +861,10 @@ const NuevoProceso = () => {
                 <p className="font-semibold">Filtros:</p>
                 <ul className="list-disc list-inside ml-4">
                   {formData.filtros.map((filtro, index) => (
-                    <li key={index}>{filtro.tipo}{filtro.detalle ? `: ${filtro.detalle}` : ''}</li>
+                    <li key={index}>
+                      {filtro.tipo}
+                      {filtro.detalle ? `: ${filtro.detalle}` : ''}
+                    </li>
                   ))}
                 </ul>
               </div>
