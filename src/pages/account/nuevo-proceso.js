@@ -41,8 +41,72 @@ const regiones = [
     communes: ['Valparaíso', 'Viña del Mar', 'Quillota', 'San Antonio'],
   },
   {
-    name: 'Metropolitana de Santiago',
-    communes: ['Santiago', 'Puente Alto', 'Maipú', 'Las Condes'],
+    name: 'Metropolitana Santiago',
+    communes: [
+      // 32 Comunas de la Provincia de Santiago
+      'Santiago',
+      'Cerrillos',
+      'Cerro Navia',
+      'Conchalí',
+      'El Bosque',
+      'Estación Central',
+      'Huechuraba',
+      'Independencia',
+      'La Cisterna',
+      'La Florida',
+      'La Granja',
+      'La Pintana',
+      'La Reina',
+      'Las Condes',
+      'Lo Barnechea',
+      'Lo Espejo',
+      'Lo Prado',
+      'Macul',
+      'Maipú',
+      'Ñuñoa',
+      'Pedro Aguirre Cerda',
+      'Peñalolén',
+      'Providencia',
+      'Pudahuel',
+      'Quilicura',
+      'Quinta Normal',
+      'Recoleta',
+      'Renca',
+      'San Joaquín',
+      'San Miguel',
+      'San Ramón',
+      'Vitacura',
+
+      // 3 Comunas de la Provincia Cordillera
+      'Puente Alto',
+      'Pirque',
+      'San José de Maipo',
+
+      // 3 Comunas de la Provincia Chacabuco
+      'Colina',
+      'Lampa',
+      'Tiltil',
+
+      // 4 Comunas de la Provincia Maipo
+      'San Bernardo',
+      'Buin',
+      'Calera de Tango',
+      'Paine',
+
+      // 5 Comunas de la Provincia Melipilla
+      'Melipilla',
+      'Alhué',
+      'Curacaví',
+      'María Pinto',
+      'San Pedro',
+
+      // 5 Comunas de la Provincia Talagante
+      'Talagante',
+      'El Monte',
+      'Isla de Maipo',
+      'Padre Hurtado',
+      'Peñaflor',
+    ],
   },
   {
     name: "Libertador General Bernardo O'Higgins",
@@ -110,23 +174,49 @@ const NuevoProceso = () => {
     horarioFin: '',
     requisitos: [],
     beneficios: [],
+    filtros: [],
   });
 
+  const filtrosOpciones = [
+    'Rango de edad',
+    'Género',
+    'Nacionalidad',
+    'Estado civil',
+    'Residencia en la zona',
+    'Disponibilidad para cambio de residencia',
+  ];
+
+  const agregarFiltro = (tipo) => {
+    if (tipo && !formData.filtros.some(f => f.tipo === tipo)) {
+      setFormData({
+        ...formData,
+        filtros: [...formData.filtros, { tipo, detalle: '' }],
+      });
+    }
+  };
+
+  const updateFiltroDetalle = (index, detalle) => {
+    const newFiltros = [...formData.filtros];
+    newFiltros[index].detalle = detalle;
+    setFormData({ ...formData, filtros: newFiltros });
+  };
+
+  const eliminarFiltro = (index) => {
+    setFormData({
+      ...formData,
+      filtros: formData.filtros.filter((_, i) => i !== index),
+    });
+  };
+
   const requisitosOpciones = [
-    'Edad mínima: 18 años',
-    'Edad máxima: 50 años',
-    'Experiencia mínima: 1 año',
-    'Experiencia mínima: 2 años',
-    'Experiencia mínima: 3 años',
-    'Experiencia mínima: 5 años',
+    'Experiencia mínima',
+    'Licencia de conducir',
+    'Certificaciones vigentes',
+    'Manejo de herramientas específicas',
+    'Trabajo en altura',
+    'Trabajo en espacios confinados',
     'Disponibilidad para viajar',
     'Disponibilidad para trabajar en turnos',
-    'Licencia de conducir clase B',
-    'Residencia en la zona',
-    'Manejo de herramientas específicas',
-    'Certificaciones vigentes',
-    'Trabajo en altura',
-    'Trabajo en espacios confinados'
   ];
 
   const beneficiosOpciones = [
@@ -143,16 +233,22 @@ const NuevoProceso = () => {
     'Estacionamiento',
     'Gimnasio',
     'Días administrativos',
-    'Horario flexible'
+    'Horario flexible',
   ];
 
-  const agregarRequisito = (requisito) => {
-    if (requisito && !formData.requisitos.includes(requisito)) {
+  const agregarRequisito = (tipo) => {
+    if (tipo && !formData.requisitos.some(r => r.tipo === tipo)) {
       setFormData({
         ...formData,
-        requisitos: [...formData.requisitos, requisito]
+        requisitos: [...formData.requisitos, { tipo, detalle: '' }],
       });
     }
+  };
+
+  const updateRequisitoDetalle = (index, detalle) => {
+    const newRequisitos = [...formData.requisitos];
+    newRequisitos[index].detalle = detalle;
+    setFormData({ ...formData, requisitos: newRequisitos });
   };
 
   const eliminarRequisito = (index) => {
@@ -166,7 +262,7 @@ const NuevoProceso = () => {
     if (beneficio && !formData.beneficios.includes(beneficio)) {
       setFormData({
         ...formData,
-        beneficios: [...formData.beneficios, beneficio]
+        beneficios: [...formData.beneficios, beneficio],
       });
     }
   };
@@ -506,32 +602,51 @@ const NuevoProceso = () => {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Requisitos *
+                    Filtros
                   </label>
                   <div className="space-y-4">
                     <select
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
-                      onChange={(e) => agregarRequisito(e.target.value)}
+                      onChange={(e) => agregarFiltro(e.target.value)}
                       value=""
                     >
-                      <option value="">Seleccionar requisito</option>
-                      {requisitosOpciones.map((requisito) => (
-                        <option key={requisito} value={requisito}>
-                          {requisito}
+                      <option value="">Seleccionar filtro</option>
+                      {filtrosOpciones.map((filtro) => (
+                        <option key={filtro} value={filtro}>
+                          {filtro}
                         </option>
                       ))}
                     </select>
                     <div className="space-y-2">
-                      {formData.requisitos.map((requisito, index) => (
-                        <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
-                          <span className="flex-1">{requisito}</span>
+                      {formData.filtros.map((filtro, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded-md"
+                        >
+                          <span className="flex-none">{filtro.tipo}</span>
+                          <input
+                            type="text"
+                            value={filtro.detalle}
+                            onChange={(e) => updateFiltroDetalle(index, e.target.value)}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded-md"
+                            placeholder="Especifique el criterio"
+                          />
                           <button
                             type="button"
-                            onClick={() => eliminarRequisito(index)}
+                            onClick={() => eliminarFiltro(index)}
                             className="text-red-600 hover:text-red-800"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -559,15 +674,82 @@ const NuevoProceso = () => {
                     </select>
                     <div className="space-y-2">
                       {formData.beneficios.map((beneficio, index) => (
-                        <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded-md"
+                        >
                           <span className="flex-1">{beneficio}</span>
                           <button
                             type="button"
                             onClick={() => eliminarBeneficio(index)}
                             className="text-red-600 hover:text-red-800"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Requisitos *
+                  </label>
+                  <div className="space-y-4">
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange"
+                      onChange={(e) => agregarRequisito(e.target.value)}
+                      value=""
+                    >
+                      <option value="">Seleccionar requisito</option>
+                      {requisitosOpciones.map((requisito) => (
+                        <option key={requisito} value={requisito}>
+                          {requisito}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="space-y-2">
+                      {formData.requisitos.map((req, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded-md"
+                        >
+                          <span className="flex-none">{req.tipo}</span>
+                          <input
+                            type="text"
+                            value={req.detalle}
+                            onChange={(e) => updateRequisitoDetalle(index, e.target.value)}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded-md"
+                            placeholder="Detalle (ej: años, clase, etc.)"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => eliminarRequisito(index)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -659,7 +841,16 @@ const NuevoProceso = () => {
                 <p className="font-semibold">Requisitos:</p>
                 <ul className="list-disc list-inside ml-4">
                   {formData.requisitos.map((req, index) => (
-                    <li key={index}>{req}</li>
+                    <li key={index}>{req.tipo}{req.detalle ? `: ${req.detalle}` : ''}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-semibold">Filtros:</p>
+                <ul className="list-disc list-inside ml-4">
+                  {formData.filtros.map((filtro, index) => (
+                    <li key={index}>{filtro.tipo}{filtro.detalle ? `: ${filtro.detalle}` : ''}</li>
                   ))}
                 </ul>
               </div>
@@ -672,24 +863,6 @@ const NuevoProceso = () => {
                   ))}
                 </ul>
               </div>
-            </div>
-
-            <div>
-              <p className="font-semibold">Requisitos:</p>
-              <ul className="list-disc list-inside ml-4">
-                {formData.requisitos.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <p className="font-semibold">Beneficios:</p>
-              <ul className="list-disc list-inside ml-4">
-                {formData.beneficios.map((ben, index) => (
-                  <li key={index}>{ben}</li>
-                ))}
-              </ul>
             </div>
 
             <div className="border-t pt-4 mb-6">

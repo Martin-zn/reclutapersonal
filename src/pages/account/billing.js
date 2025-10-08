@@ -20,14 +20,14 @@ const Billing = () => {
       id: 2,
       fecha: '2024-01-10',
       descripcion: 'Solicitud de personal - Maestro de Obra',
-      monto: '-5000',
+      monto: '5000',
       tipo: 'uso',
     },
     {
       id: 3,
       fecha: '2024-01-08',
       descripcion: 'Solicitud de personal - Ayudante',
-      monto: '-3000',
+      monto: '3000',
       tipo: 'uso',
     },
     {
@@ -71,8 +71,12 @@ const Billing = () => {
             <Card.Body title="Acciones" />
             <div className="p-6 text-center">
               <div className="space-y-4">
-                <Button variant="primary" className="w-full">Depositar</Button>
-                <Button variant="secondary" className="w-full">Retirar</Button>
+                <Button variant="primary" className="w-full">
+                  Depositar
+                </Button>
+                <Button variant="secondary" className="w-full">
+                  Retirar
+                </Button>
               </div>
             </div>
           </Card>
@@ -103,8 +107,8 @@ const Billing = () => {
                         transaccion.tipo
                       )}`}
                     >
-                      {getMontoSigno(transaccion.tipo)}
-                      ${new Intl.NumberFormat('es-CL').format(transaccion.monto)}
+                      {getMontoSigno(transaccion.tipo)}$
+                      {new Intl.NumberFormat('es-CL').format(transaccion.monto)}
                     </td>
                   </tr>
                 ))}
